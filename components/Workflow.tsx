@@ -1,5 +1,6 @@
 'use client'
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import {
@@ -26,6 +27,7 @@ import {
   XIcon,
 } from 'lucide-react'
 import * as React from 'react'
+import { useState } from 'react'
 
 const contentItems = [
   'How AI is reshaping social media',
@@ -61,6 +63,12 @@ const presetTimes = Array.from(
   (_, i) => `${String(i).padStart(2, '0')}:00`,
 )
 
+const mockTikTokUser = {
+  name: 'Alex Creator',
+  handle: '@alexcreator',
+  avatar: 'https://github.com/maxleiter.png',
+}
+
 function TikTokIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -75,11 +83,12 @@ function TikTokIcon({ className }: { className?: string }) {
 }
 
 export function Workflow() {
-  const [selectedAI, setSelectedAI] = React.useState(aiModels[0])
-  const [prompt, setPrompt] = React.useState('')
-  const [postTime, setPostTime] = React.useState('09:00')
-  const [selectedContent, setSelectedContent] = React.useState<string[]>([])
-  const [items, setItems] = React.useState(contentItems)
+  const [selectedAI, setSelectedAI] = useState(aiModels[0])
+  const [prompt, setPrompt] = useState('')
+  const [postTime, setPostTime] = useState('09:00')
+  const [selectedContent, setSelectedContent] = useState<string[]>([])
+  const [items, setItems] = useState(contentItems)
+  const [tiktokConnected, setTiktokConnected] = useState(false)
 
   const toggleContent = (item: string) => {
     setSelectedContent((prev) => (prev.includes(item) ? [] : [item]))
@@ -218,19 +227,45 @@ export function Workflow() {
             variant='outline'
             size='lg'
             className='w-full gap-2 text-base'
-            disabled={true}
+            onClick={() => !tiktokConnected && setTiktokConnected(true)}
           >
             <TikTokIcon className='h-5 w-5 shrink-0' />
-            TikTok
+            {tiktokConnected ? 'TikTok' : 'Connect TikTok'}
           </Button>
         </ButtonGroup>
+        {tiktokConnected && (
+          <div className='flex items-center gap-2 rounded-md border px-3 py-2'>
+            <Avatar>
+              <AvatarImage
+                src='https://github.com/evilrabbit.png'
+                alt='@evilrabbit'
+              />
+              <AvatarFallback>ER</AvatarFallback>
+            </Avatar>
+            <div className='min-w-0 flex-1'>
+              <p className='truncate text-sm font-medium'>
+                {mockTikTokUser.name}
+              </p>
+              <p className='truncate text-xs text-muted-foreground'>
+                {mockTikTokUser.handle}
+              </p>
+            </div>
+            <button
+              onClick={() => setTiktokConnected(false)}
+              className='shrink-0 rounded p-1 hover:bg-muted'
+            >
+              <XIcon className='h-3.5 w-3.5 text-muted-foreground' />
+            </button>
+          </div>
+        )}
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant='outline'
               size='lg'
-              className='w-full gap-2 text-base'
-              disabled={true}
+              className='w-full gap-2 text-sm'
+              disabled={!tiktokConnected}
             >
               <ClockIcon className='h-4 w-4 shrink-0 text-xs' />
               Schedule
@@ -240,16 +275,18 @@ export function Workflow() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align='start'
-            className='max-h-60 w-36 overflow-y-auto'
+            className='max-h-60 w-(--radix-dropdown-menu-trigger-width) overflow-y-auto'
           >
-            <DropdownMenuLabel>Posting time</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuRadioGroup
               value={postTime}
               onValueChange={setPostTime}
             >
               {presetTimes.map((t) => (
-                <DropdownMenuRadioItem key={t} value={t}>
+                <DropdownMenuRadioItem
+                  key={t}
+                  value={t}
+                  className='justify-center text-center font-mono'
+                >
                   {t}
                 </DropdownMenuRadioItem>
               ))}
