@@ -1,3 +1,3 @@
-export const dashboard = () => {
+export default function dashboard() {
   return <></>
 }
