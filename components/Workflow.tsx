@@ -21,6 +21,7 @@ import {
   ChevronDownIcon,
   ClockIcon,
   FileTextIcon,
+  RefreshCwIcon,
   TrendingUpIcon,
   XIcon,
 } from 'lucide-react'
@@ -78,23 +79,33 @@ export function Workflow() {
   const [prompt, setPrompt] = React.useState('')
   const [postTime, setPostTime] = React.useState('09:00')
   const [selectedContent, setSelectedContent] = React.useState<string[]>([])
+  const [items, setItems] = React.useState(contentItems)
 
   const toggleContent = (item: string) => {
     setSelectedContent((prev) => (prev.includes(item) ? [] : [item]))
   }
 
+  const refreshContent = () => {
+    setSelectedContent([])
+    setItems((prev) => [...prev].sort(() => Math.random() - 0.5))
+  }
+
   return (
-    <div className='flex w-full max-w-7xl flex-col items-stretch gap-4 px-4 font-mono md:flex-row md:items-start md:px-8'>
+    <div className='flex w-full flex-col items-stretch gap-4 px-4 font-mono md:flex-row md:items-start md:px-8'>
       {/* Step 1: Content */}
       <div className='flex min-w-0 flex-1 flex-col gap-2 '>
         <ButtonGroup className='w-full'>
+          <Button variant='outline' size='lg' className='w-5/6 gap-2 text-base'>
+            <FileTextIcon className='h-5 w-5 shrink-0' />
+            Content
+          </Button>
           <Button
             variant='outline'
             size='lg'
-            className='w-full gap-2 text-base'
+            className='w-1/6 gap-2 hover:cursor-pointer'
+            onClick={refreshContent}
           >
-            <FileTextIcon className='h-5 w-5 shrink-0' />
-            Content
+            <RefreshCwIcon className='h-4 w-4' />
           </Button>
         </ButtonGroup>
 
@@ -124,7 +135,7 @@ export function Workflow() {
           {/* Full list */}
           <ScrollArea className='h-56'>
             <div className='p-2'>
-              {contentItems.map((item, i) => (
+              {items.map((item, i) => (
                 <React.Fragment key={item}>
                   <div
                     className={`flex cursor-pointer items-center rounded px-2 py-2 text-sm transition hover:bg-muted ${
@@ -136,9 +147,7 @@ export function Workflow() {
                   >
                     {item}
                   </div>
-                  {i < contentItems.length - 1 && (
-                    <Separator className='my-0.5' />
-                  )}
+                  {i < items.length - 1 && <Separator className='my-0.5' />}
                 </React.Fragment>
               ))}
             </div>
@@ -157,6 +166,7 @@ export function Workflow() {
               variant='outline'
               size='lg'
               className='w-full gap-2 text-base'
+              disabled={true}
             >
               {selectedAI.name}
               <ChevronDownIcon className='ml-auto h-4 w-4 shrink-0' />
@@ -183,6 +193,7 @@ export function Workflow() {
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
+          disabled={true}
           placeholder='Write your prompt…'
           rows={5}
           className='w-full resize-none rounded-md border bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring'
@@ -207,6 +218,7 @@ export function Workflow() {
             variant='outline'
             size='lg'
             className='w-full gap-2 text-base'
+            disabled={true}
           >
             <TikTokIcon className='h-5 w-5 shrink-0' />
             TikTok
@@ -218,6 +230,7 @@ export function Workflow() {
               variant='outline'
               size='lg'
               className='w-full gap-2 text-base'
+              disabled={true}
             >
               <ClockIcon className='h-4 w-4 shrink-0 text-xs' />
               Schedule
